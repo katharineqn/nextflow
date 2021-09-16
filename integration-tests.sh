@@ -11,7 +11,7 @@ if [[ $X_PULL_REQUEST != false ]] && [ ${TEST_JDK} -gt 8 ]; then
   exit 0
 fi
 
-if [[ $X_BRANCH != master && $X_BRANCH != testing ]] && [ ${TEST_JDK:=8} -gt 8 ]; then
+if [[ $X_BRANCH != master && $X_BRANCH != jdk-17 ]] && [ ${TEST_JDK:=8} -gt 8 ]; then
   echo "Integration tests are only executed on branch 'master' or 'testing' for JDK>8"
   exit 0
 fi

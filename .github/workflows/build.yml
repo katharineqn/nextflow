@@ -61,7 +61,7 @@ jobs:
 
     - name: Integration
       if: "!contains(github.event.head_commit.message, '[ci fast]')"
-      run: make install && ./integration-tests.sh
+      run: make install
       env:
         TEST_JDK: ${{ matrix.java_version }}
         GRADLE_OPTS: '-Dorg.gradle.daemon=false'
@@ -78,18 +78,18 @@ jobs:
         AZURE_STORAGE_ACCOUNT_KEY: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
         AZURE_BATCH_ACCOUNT_KEY: ${{ secrets.AZURE_BATCH_ACCOUNT_KEY }}
 
-    - name: Setup Java 8
-      if: "matrix.java_version != 8 && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/testing') && !contains(github.event.head_commit.message, '[ci fast]')"
+    - name: Setup Java 17
+      if: "matrix.java_version == 8 && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/jdk-17') && !contains(github.event.head_commit.message, '[ci fast]')"
       uses: actions/setup-java@v1
       with:
-        java-version: 8
+        java-version: 17
         architecture: x64
 
-    - name: Integration vs Java 8
-      if: "matrix.java_version != 8 && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/testing') && !contains(github.event.head_commit.message, '[ci fast]')"
+    - name: Integration vs Java 17
+      if: "matrix.java_version == 8 && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/jdk-17') && !contains(github.event.head_commit.message, '[ci fast]')"
       run: ./integration-tests.sh
       env:
-        TEST_JDK: 8
+        TEST_JDK: 17
         TEST_SMOKE: true
         GRADLE_OPTS: '-Dorg.gradle.daemon=false'
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
