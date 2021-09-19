@@ -26,6 +26,7 @@ import nextflow.container.ContainerConfig
 import nextflow.container.DockerBuilder
 import nextflow.container.SingularityBuilder
 import nextflow.processor.TaskBean
+import nextflow.secret.LocalSecretsProvider
 import nextflow.util.MustacheTemplateEngine
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -202,6 +203,9 @@ class BashWrapperBuilderTest extends Specification {
         bash.getContainerCpus() >> null
         bash.getContainerCpuset() >> null
         bash.getContainerOptions() >> null
+
+        bash.isSecretNative() >> false
+        bash.getSecretNames() >> []
 
         builder instanceof SingularityBuilder
         builder.env == ['FOO','BAR']
@@ -470,6 +474,36 @@ class BashWrapperBuilderTest extends Specification {
         binding.container_env == null
         !binding.launch_cmd.contains('nxf_container_env')
     }
+
+    def 'should create secret env' () {
+
+        when:
+        def binding0 = newBashWrapperBuilder().makeBinding()
+        then:
+        binding0.containsKey('secret_env')
+        binding0.secret_env == null
+
+        when:
+        def builder1 = Spy(newBashWrapperBuilder()) {
+            getSecretEnv() >> 'source /some/file.txt'
+            isSecretNative() >> false
+        }
+        and:
+        def binding1 = builder1.makeBinding()
+        then:
+        binding1.secret_env == 'source /some/file.txt'
+
+        when:
+        def builder2 = Spy(newBashWrapperBuilder()) {
+            getSecretEnv() >> 'source /some/file.txt'
+            isSecretNative() >> true
+        }
+        and:
+        def binding2 = builder2.makeBinding()
+        then:
+        binding2.secret_env == null
+    }
+
 
     def 'should enable trace feature' () {
         when:

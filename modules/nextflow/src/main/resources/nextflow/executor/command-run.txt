@@ -138,6 +138,7 @@ nxf_main() {
     {{conda_activate}}
     set -u
     {{task_env}}
+    {{secret_env}}
     [[ $NXF_SCRATCH ]] && echo "nxf-scratch-dir $HOSTNAME:$NXF_SCRATCH" && cd $NXF_SCRATCH
     {{stage_cmd}}
 
